@@ -6,7 +6,7 @@ import java.util.concurrent.CyclicBarrier;
 
 public class Wave
 {
-    int[][] map; // наша целочисленная карта
+    public int[][] map; // наша целочисленная карта
     public int d; // число шагов распросранения волны
 
     public Pair <Integer, Integer> point; // текущая позиция
@@ -16,6 +16,8 @@ public class Wave
 
     public CyclicBarrier barrier;
 
+    public int points;
+
     public Wave (int[][] map)
     {
         this.map = map;
@@ -24,11 +26,16 @@ public class Wave
         finish = null;
         queue = new LinkedList<>();
         barrier = new CyclicBarrier(4, new Run(this));
+        points = 1;
     }
 
     void nextStep ()
     {
+        if (points == 0) {
+            points = queue.size();
+            ++d;
+        }
         point = queue.poll(); // вытаскиваем первый элемент из очереди в точку
-        d++;
+        --points;
     }
 }

@@ -38,6 +38,8 @@ public class MachuPickchuNavigator implements Navigator
 
         Pair <Integer, Integer> finish = doWaveToFinish(mapInInts); // распространение волны и нахождение финиша
 
+        if (finish.getKey() == null && finish.getValue() == null) return null;
+
         routeBuilding(mapInInts, finish); // построение кратчайшего пути
 
         return mapInChar; // возврат символьной карты с проложенным маршрутом
@@ -54,27 +56,12 @@ public class MachuPickchuNavigator implements Navigator
         Wave Q = new Wave(mapInInts);
         Q.queue.add(start);
 
-//        new Thread(new Explorer (Q, 0, -1)).start();
-//        new Thread(new Explorer (Q, 1, 0)).start();
-//        new Thread(new Explorer (Q, 0, 1)).start();
-//        new Thread(new Explorer (Q, -1, 0)).start();
-
-        Explorer north = new Explorer (Q, 0, -1);
-        Explorer east = new Explorer (Q, 1, 0);
-        Explorer south = new Explorer (Q, 0, 1);
-        Explorer west = new Explorer (Q, -1, 0);
-
-        north.start();
-        east.start();
-        south.start();
-        west.start();
+        new Thread(new Explorer (Q, 0, -1)).start();
+        new Thread(new Explorer (Q, 1, 0)).start();
+        new Thread(new Explorer (Q, 0, 1)).start();
+        new Thread(new Explorer (Q, -1, 0)).start();
 
         while (Q.finish == null) Thread.yield(); // ожидаем нахождения финишной точки
-
-        north.stop();
-        east.stop();
-        south.stop();
-        west.stop();
 
         return Q.finish;
     }

@@ -23,18 +23,15 @@ public class Explorer extends Thread
         {
             // ожидание остальных потоков
             try {
-                wave.barrier.await();
                 if (wave.finish != null)
                 {
-                    wave.barrier.notifyAll();
+                    wave.barrier.reset();
                     break; // выходим из потока при обнаружении финиша
                 }
-
+                wave.barrier.await();
             }
             catch (InterruptedException e) { e.printStackTrace(); }
             catch (BrokenBarrierException e) { e.printStackTrace(); }
-
-            //System.out.println(" Мы внутри метода " + this.getName());
 
             if (wave.point.getKey() + di < 0 ||
                     wave.point.getValue() + dj < 0 ||
@@ -52,6 +49,5 @@ public class Explorer extends Thread
                 }
             }
         }
-        //System.out.println("Последняя операция потока" + this.getName());
     }
 }

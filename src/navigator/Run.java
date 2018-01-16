@@ -1,5 +1,7 @@
 package navigator;
 
+import javafx.util.Pair;
+
 public class Run extends Thread
 {
     Wave wave;
@@ -11,11 +13,9 @@ public class Run extends Thread
 
     public void run ()
     {
-        //System.out.println("Sync throws");
-
         if (wave.finish == null)
         {
-            if(wave.queue.isEmpty()) return; // случай, когда волна зашла в тупик
+            if(wave.queue.isEmpty()) wave.finish = new Pair<Integer, Integer>(null, null); // случай, когда волна зашла в тупик
             wave.nextStep();
         }
     }
