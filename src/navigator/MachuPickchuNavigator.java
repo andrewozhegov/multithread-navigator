@@ -9,9 +9,18 @@ public class MachuPickchuNavigator implements Navigator
     private final int startCell   =  0;           // @ (собака) старт
     private final int finishCell  = -3;           // X (заглавный икс) финиш
 
+    private int mapMaxI;
+    private int mapMaxJ;
+
     private char[][] mapInChar;
 
     private Pair <Integer, Integer> start; // позиции граничных элементов волны для обхода
+
+    MachuPickchuNavigator ()
+    {
+        mapMaxI = 10000;
+        mapMaxJ = 10000;
+    }
 
     /**
      * Поиск кратчайшего маршрута на карте города между двумя точками
@@ -20,16 +29,35 @@ public class MachuPickchuNavigator implements Navigator
      */
     public char[][] searchRoute (char[][] map)
     {
-        if (map.length > 10000 || map[0].length > 10000) return null; // размер карты превышает допустимые
+        if (map.length > mapMaxI || map[0].length > mapMaxJ) return null; // размер карты превышает допустимые
 
         mapInChar = map;
         int[][] mapInInts = toIntMap(map);
         if (start == null) return null; // количество начальных точек не соответствует ожиданиям
         if (mapInInts == null) return null; // на карте найдены неверные символы
 
+        Pair <Integer, Integer> finish = doWaveToFinish(mapInInts); // распространение волны и нахождение финиша
+
+        routeBuilding(mapInInts, finish); // построение кратчайшего пути
+
+        return mapInChar; // возврат символьной карты с проложенным маршрутом
+    }
+
+    /**
+     * Распространение волны до нахождения финишной позиции
+     * @param mapInInts целочисленная карта города
+     * @return объект волны в момент нахождения финишной позиции
+     */
+    Pair <Integer, Integer> doWaveToFinish (int[][] mapInInts)
+    {
         // Критическая область
         Wave Q = new Wave(mapInInts);
         Q.queue.add(start);
+
+//        new Thread(new Explorer (Q, 0, -1)).start();
+//        new Thread(new Explorer (Q, 1, 0)).start();
+//        new Thread(new Explorer (Q, 0, 1)).start();
+//        new Thread(new Explorer (Q, -1, 0)).start();
 
         Explorer north = new Explorer (Q, 0, -1);
         Explorer east = new Explorer (Q, 1, 0);
@@ -43,8 +71,23 @@ public class MachuPickchuNavigator implements Navigator
 
         while (Q.finish == null) Thread.yield(); // ожидаем нахождения финишной точки
 
-        int i = Q.finish.getKey();
-        int j = Q.finish.getValue();
+        north.stop();
+        east.stop();
+        south.stop();
+        west.stop();
+
+        return Q.finish;
+    }
+
+    /**
+     * Построение маршрута на символьной карте
+     * @param mapInInts индексированная целочисленная карта города
+     * @param finish финишная позиция
+     */
+    void routeBuilding (int[][] mapInInts, Pair <Integer, Integer> finish)
+    {
+        int i = finish.getKey();
+        int j = finish.getValue();
 
         for (int d = mapInInts[i][j] - 1; d > 0; --d)
         {
@@ -60,19 +103,18 @@ public class MachuPickchuNavigator implements Navigator
                     continue;
                 }
 
-            if (i < map.length - 1)
+            if (i < mapInChar.length - 1)
                 if (mapInInts[i + 1][j] == d) {
                     mapInChar[++i][j] = '+';
                     continue;
                 }
 
-            if (j < map[0].length - 1)
+            if (j < mapInChar[0].length - 1)
                 if (mapInInts[i][j + 1] == d) {
                     mapInChar[i][++j] = '+';
                     continue;
                 }
         }
-        return mapInChar;
     }
 
     /**

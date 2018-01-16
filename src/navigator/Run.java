@@ -11,6 +11,8 @@ public class Run extends Thread
 
     public void run ()
     {
+        //System.out.println("Sync throws");
+
         if (wave.finish == null)
         {
             if(wave.queue.isEmpty()) return; // случай, когда волна зашла в тупик

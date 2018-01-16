@@ -6,6 +6,7 @@ import java.util.concurrent.BrokenBarrierException;
 public class Explorer extends Thread
 {
     Wave wave; // ссылка на объект волны
+
     private int di; // смещение обзора по i
     private int dj; // смещение обзора по j
 
@@ -23,11 +24,17 @@ public class Explorer extends Thread
             // ожидание остальных потоков
             try {
                 wave.barrier.await();
-                if (wave.finish != null) break; // выходим из потока при обнаружении финиша
-                wave.barrier.await();
+                if (wave.finish != null)
+                {
+                    wave.barrier.notifyAll();
+                    break; // выходим из потока при обнаружении финиша
+                }
+
             }
             catch (InterruptedException e) { e.printStackTrace(); }
             catch (BrokenBarrierException e) { e.printStackTrace(); }
+
+            //System.out.println(" Мы внутри метода " + this.getName());
 
             if (wave.point.getKey() + di < 0 ||
                     wave.point.getValue() + dj < 0 ||
@@ -45,5 +52,6 @@ public class Explorer extends Thread
                 }
             }
         }
+        //System.out.println("Последняя операция потока" + this.getName());
     }
 }

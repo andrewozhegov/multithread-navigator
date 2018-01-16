@@ -29,6 +29,6 @@ public class Wave
     void nextStep ()
     {
         point = queue.poll(); // вытаскиваем первый элемент из очереди в точку
-        this.d++;
+        d++;
     }
 }
