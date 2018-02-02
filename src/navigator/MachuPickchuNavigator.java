@@ -50,16 +50,17 @@ public class MachuPickchuNavigator implements Navigator
      * @param mapInInts целочисленная карта города
      * @return объект волны в момент нахождения финишной позиции
      */
-    Pair <Integer, Integer> doWaveToFinish (int[][] mapInInts)
+    private Pair <Integer, Integer> doWaveToFinish (int[][] mapInInts)
     {
         // Критическая область
         Wave Q = new Wave(mapInInts);
-        Q.queue.add(start);
+        
+        Q.addToQueue(start);
 
-        new Thread(new Explorer (Q, 0, -1)).start();
-        new Thread(new Explorer (Q, 1, 0)).start();
-        new Thread(new Explorer (Q, 0, 1)).start();
-        new Thread(new Explorer (Q, -1, 0)).start();
+        new Thread(new Explorer (Q)).start();
+        new Thread(new Explorer (Q)).start();
+        new Thread(new Explorer (Q)).start();
+        new Thread(new Explorer (Q)).start();
 
         while (Q.finish == null) Thread.yield(); // ожидаем нахождения финишной точки
 
@@ -71,7 +72,7 @@ public class MachuPickchuNavigator implements Navigator
      * @param mapInInts индексированная целочисленная карта города
      * @param finish финишная позиция
      */
-    void routeBuilding (int[][] mapInInts, Pair <Integer, Integer> finish)
+    private void routeBuilding (int[][] mapInInts, Pair <Integer, Integer> finish)
     {
         int i = finish.getKey();
         int j = finish.getValue();
